@@ -1,10 +1,22 @@
 using ECommerceLabb.Components;
+using ECommerceLabb.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+//builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"]!) });
+//builder.Services.AddScoped<ProductService>();
+
+builder.Services.AddHttpClient<ProductService>(client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"]!);
+});
+
+builder.Services.AddScoped<ProductService>();
+
 
 var app = builder.Build();
 

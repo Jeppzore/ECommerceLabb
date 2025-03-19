@@ -1,0 +1,31 @@
+﻿@using ECommerceLabb.Services
+@using ECommerceLabb.Models;
+@page "/customers"
+@* @inject ProductService ProductService
+
+<PageTitle>Products</PageTitle>
+
+<h3>Products</h3>
+
+@if (products == null)
+{
+	<p>Loading...</p>
+}
+else
+{
+	<ul>
+		@foreach (var product in products!)
+		{
+			<li>@product.Name - @product.Price</li>
+		}
+	</ul>
+}
+
+@code {
+	private List<Product>? products;
+
+	protected override async Task OnInitializedAsync()
+	{
+		products = await ProductService.GetproductsAsync();
+	}
+} *@
