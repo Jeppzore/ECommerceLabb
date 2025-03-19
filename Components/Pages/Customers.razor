@@ -1,31 +1,35 @@
 ﻿@using ECommerceLabb.Services
 @using ECommerceLabb.Models;
 @page "/customers"
-@* @inject ProductService ProductService
+@inject CustomerService CustomerService
 
-<PageTitle>Products</PageTitle>
+<PageTitle>Customers</PageTitle>
 
-<h3>Products</h3>
+<h3>Customers</h3>
 
-@if (products == null)
+@if (customers == null)
 {
 	<p>Loading...</p>
 }
 else
 {
 	<ul>
-		@foreach (var product in products!)
+		@foreach (var customer in customers!)
 		{
-			<li>@product.Name - @product.Price</li>
+			<li>Full name: @customer.FirstName @customer.LastName</li>
+			<li>Email: @customer.Email</li>
+			<li>Address: @customer.Address</li>
+			<li>Phone number: @customer.PhoneNumber</li>
+			<hr />
 		}
 	</ul>
 }
 
 @code {
-	private List<Product>? products;
+	private List<Customer>? customers;
 
 	protected override async Task OnInitializedAsync()
 	{
-		products = await ProductService.GetproductsAsync();
+		customers = await CustomerService.GetCustomersAsync();
 	}
-} *@
+}
