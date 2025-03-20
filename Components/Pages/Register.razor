@@ -1,0 +1,66 @@
+﻿
+@using ECommerceLabb.Services
+@using ECommerceLabb.Models
+@using System.Text.Json
+@page "/register"
+@inject CustomerService CustomerService
+
+<PageTitle>Register</PageTitle>
+<h3>Register here for special offers!</h3>
+
+@if (isSubmitted)
+{
+	<p>Registration successful!</p>
+}
+else
+{
+	<EditForm Model ="@customer" OnValidSubmit="HandleSubmit" FormName="SubmitForm">
+		<DataAnnotationsValidator />
+		<ValidationSummary />
+
+		<div>
+			<label>First Name:</label>
+			<InputText @bind-Value="customer.FirstName"/>
+		</div>
+
+		<div>
+			<label>Last Name:</label>
+			<InputText @bind-Value="customer.LastName" />
+		</div>
+
+		<div>
+			<label>Email:</label>
+			<InputText @bind-Value="customer.Email" />
+		</div>
+
+		<div>
+			<label>Address:</label>
+			<InputText @bind-Value="customer.Address" />
+		</div>
+
+		<div>
+			<label>Phone Number:</label>
+			<InputText @bind-Value="customer.PhoneNumber" />
+		</div>
+
+		<button type="submit">Register</button>
+	</EditForm>
+}
+
+@code {
+	private Customer customer = new Customer();
+	private bool isSubmitted = false;
+
+	private async Task HandleSubmit()
+	{
+		Console.WriteLine("Form submitted. Checking customer object...");
+		Console.WriteLine(JsonSerializer.Serialize(customer, new JsonSerializerOptions { WriteIndented = true }));
+
+		var success = await CustomerService.RegisterCustomerAsync(customer);
+		Console.WriteLine("API call result: " + success);
+		if (success)
+		{
+			isSubmitted = true;
+		}
+	}
+}

@@ -15,6 +15,11 @@ builder.Services.AddHttpClient<ProductService>(client =>
     client.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"]!);
 });
 
+builder.Services.AddHttpClient<CustomerService>(client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"]!);
+});
+
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<CustomerService>();
 
