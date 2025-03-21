@@ -1,6 +1,6 @@
 using ECommerceLabb.Components;
 using ECommerceLabb.Services;
-
+using ECommerceLabb.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -9,19 +9,28 @@ builder.Services.AddRazorComponents()
 
 //builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"]!) });
 //builder.Services.AddScoped<ProductService>();
+builder.Services.AddScoped<ProductService>();
+builder.Services.AddScoped<CustomerService>();
 
 builder.Services.AddHttpClient<ProductService>(client =>
 {
     client.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"]!);
+    Console.WriteLine($"HttpClient ProductService BaseAddress: {client.BaseAddress}");
 });
 
 builder.Services.AddHttpClient<CustomerService>(client =>
 {
-    client.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"]!);
-});
+    var apiBaseUrl = builder.Configuration["ApiBaseUrl"];
+    if (string.IsNullOrEmpty(apiBaseUrl))
+    {
+        throw new Exception("ApiBaseUrl is missing in configuration!");
+    }
 
-builder.Services.AddScoped<ProductService>();
-builder.Services.AddScoped<CustomerService>();
+    client.BaseAddress = new Uri(apiBaseUrl);
+    Console.WriteLine($"HttpClient CustomerService BaseAddress SET: {client.BaseAddress}");
+    //client.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"]!);
+    //Console.WriteLine($"HttpClient CustomerService BaseAddress: {client.BaseAddress}");
+});
 
 
 var app = builder.Build();
@@ -43,3 +52,4 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
 app.Run();
+

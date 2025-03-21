@@ -2,6 +2,7 @@
 @using ECommerceLabb.Services
 @using ECommerceLabb.Models
 @using System.Text.Json
+@using Microsoft.AspNetCore.Components.Forms
 @page "/register"
 @inject CustomerService CustomerService
 
@@ -14,13 +15,13 @@
 }
 else
 {
-	<EditForm Model ="@customer" OnValidSubmit="HandleSubmit" FormName="SubmitForm">
+	<EditForm Model ="customer" OnValidSubmit="HandleSubmit" FormName="SubmitForm" Enhance>
 		<DataAnnotationsValidator />
 		<ValidationSummary />
 
 		<div>
 			<label>First Name:</label>
-			<InputText @bind-Value="customer.FirstName"/>
+			<InputText @bind-Value="customer!.FirstName" />
 		</div>
 
 		<div>
@@ -48,15 +49,17 @@ else
 }
 
 @code {
-	private Customer customer = new Customer();
-	private bool isSubmitted = false;
+	[SupplyParameterFromForm]
+	public Customer? customer { get; set; } = new();
 
-	private async Task HandleSubmit()
+	public bool isSubmitted = false;
+
+	public async Task HandleSubmit()
 	{
 		Console.WriteLine("Form submitted. Checking customer object...");
 		Console.WriteLine(JsonSerializer.Serialize(customer, new JsonSerializerOptions { WriteIndented = true }));
 
-		var success = await CustomerService.RegisterCustomerAsync(customer);
+		var success = await CustomerService.RegisterCustomerAsync(customer!);
 		Console.WriteLine("API call result: " + success);
 		if (success)
 		{
