@@ -9,6 +9,11 @@
 <PageTitle>Register</PageTitle>
 <h3>Register here for special offers!</h3>
 
+@if (isConflict)
+{
+	<p><b>Failed to register!</b> A Customer with that email already exists, or you haven't filled in all the forms.</p>
+}
+
 @if (isSubmitted)
 {
 	<p>Registration successful!</p>
@@ -53,6 +58,7 @@ else
 	public Customer? customer { get; set; } = new();
 
 	public bool isSubmitted = false;
+	public bool isConflict = false;
 
 	public async Task HandleSubmit()
 	{
@@ -64,6 +70,10 @@ else
 		if (success)
 		{
 			isSubmitted = true;
+		}
+		else
+		{
+			isConflict = true;
 		}
 	}
 }
