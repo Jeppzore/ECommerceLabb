@@ -11,6 +11,7 @@ builder.Services.AddRazorComponents()
 //builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<CustomerService>();
+builder.Services.AddScoped<OrderService>();
 
 builder.Services.AddHttpClient<ProductService>(client =>
 {

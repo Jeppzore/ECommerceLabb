@@ -15,7 +15,7 @@
 }
 else
 {
-	<EditForm Model="@newOrder" OnValidSubmit="SubmitOrder">
+	<EditForm Model="newOrder" OnValidSubmit="SubmitOrder" FormName="SubmitOrderForm" Enhance>
 		<DataAnnotationsValidator />
 		<ValidationSummary />
 
