@@ -1,0 +1,104 @@
+﻿@page "/orders"
+@using ECommerceLabb.Models
+@using ECommerceLabb.Services
+@inject CustomerService CustomerService
+@inject ProductService ProductService
+@inject OrderService OrderService
+
+<PageTitle>Place an Order</PageTitle>
+
+<h3>Place an Order</h3>
+
+@if (orderPlaced)
+{
+	<p>Thank you! Your order has been placed.</p>
+}
+else
+{
+	<EditForm Model="@newOrder" OnValidSubmit="SubmitOrder">
+		<DataAnnotationsValidator />
+		<ValidationSummary />
+
+		<div>
+			<label>Select Customer:</label>
+			<select @bind="selectedCustomerId">
+				<option value="">-- Select --</option>
+				@foreach (var customer in customers)
+				{
+					<option value="@customer.Id">@customer.FirstName @customer.LastName</option>
+				}
+			</select>
+		</div>
+
+		<div>
+			<label>Select Products:</label>
+			<div>
+				@foreach (var product in products)
+				{
+					<div>
+						<input type="checkbox" @bind="@productSelections[product.Id]" />
+						<span>@product.Name - $@product.Price</span>
+						<input type="number" min=" =1" @bind="quantities[product.Id]" placeholder="Qty" style="width: 50px;" />
+					</div>
+				}
+			</div>
+		</div>
+
+		<button type="submit">Place Order</button>
+	</EditForm>
+}
+
+@code {
+	private List<Customer> customers = new();
+	private List<Product> products = new();
+	private Dictionary<string, bool> productSelections = new();
+	private Dictionary<string, int> quantities = new();
+	private string selectedCustomerId = "";
+	private Order newOrder = new();
+	private bool orderPlaced = false;
+
+	protected override async Task OnInitializedAsync()
+	{
+		customers = await CustomerService.GetCustomersAsync() ?? new();
+		products = await ProductService.GetproductsAsync() ?? new();
+	}
+
+	private async Task SubmitOrder()
+	{
+		if (string.IsNullOrEmpty(selectedCustomerId))
+		{
+			Console.WriteLine("No customer selected.");
+			return;
+		}
+
+		var selectedProducts = products
+			.Where(p => productSelections.ContainsKey(p.Id!) && productSelections[p.Id!])
+			.Select(p => new OrderItem
+				{
+					ProductId = p.Id,
+					ProductName = p.Name,
+					Price = p.Price,
+					Quantity = quantities.ContainsKey(p.Id!) ? quantities[p.Id!] : 1
+				})
+			.ToList();
+
+		if (!selectedProducts.Any())
+		{
+			Console.WriteLine("No products selected.");
+			return;
+		}
+
+		newOrder = new Order
+		{
+			CustomerId = selectedCustomerId,
+			Items = selectedProducts,
+			TotalPrice = selectedProducts.Sum(p => p.Price * p.Quantity)
+		};
+
+		var success = await OrderService.PlaceOrderAsync(newOrder);
+		if (success)
+		{
+			orderPlaced = true;
+		}
+	}
+}
