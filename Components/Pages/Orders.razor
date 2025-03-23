@@ -36,9 +36,9 @@ else
 				@foreach (var product in products)
 				{
 					<div>
-						<input type="checkbox" @bind="@productSelections[product.Id]" />
+						<input type="checkbox" @bind="@productSelections[product.Id!]" />
 						<span>@product.Name - $@product.Price</span>
-						<input type="number" min=" =1" @bind="quantities[product.Id]" placeholder="Qty" style="width: 50px;" />
+						<input type="number" min=" =1" @bind="quantities[product.Id!]" placeholder="Qty" style="width: 50px;" />
 					</div>
 				}
 			</div>
