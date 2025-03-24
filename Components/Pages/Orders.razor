@@ -15,7 +15,7 @@
 }
 else
 {
-	<EditForm Model="newOrder" OnValidSubmit="SubmitOrder" FormName="SubmitOrderForm" Enhance>
+	<EditForm Model="@newOrder" OnValidSubmit="SubmitOrder" FormName="SubmitOrderForm" Enhance>
 		<DataAnnotationsValidator />
 		<ValidationSummary />
 
@@ -33,7 +33,7 @@ else
 				<option value="">-- Select --</option>
 				@foreach (var customer in customers)
 				{
-					<option value="@customer.Id">@customer.FirstName @customer.LastName</option>	
+					<option value="@customer.Id">@customer.FirstName @customer.LastName @customer.Id</option>	
 				}
 			</select>
 
