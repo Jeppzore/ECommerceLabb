@@ -19,15 +19,25 @@ else
 		<DataAnnotationsValidator />
 		<ValidationSummary />
 
+		<!-- Debugging: Display All Customers -->
+		<h4>Debugging Customers:</h4>
+		@foreach (var customer in customers)
+		{
+			<p>ID: @customer.Id, Name: @customer.FirstName @customer.LastName</p>
+		}
+
+		@* Customer Dropdown *@
 		<div>
 			<label>Select Customer:</label>
-			<select @bind="selectedCustomerId">
+			<select @bind="newOrder.CustomerId">
 				<option value="">-- Select --</option>
 				@foreach (var customer in customers)
 				{
-					<option value="@customer.Id">@customer.FirstName @customer.LastName</option>
+					<option value="@customer.Id">@customer.FirstName @customer.LastName</option>	
 				}
 			</select>
+
+			<p>Selected Customer ID: @newOrder.CustomerId</p>
 		</div>
 
 		<div>
@@ -53,13 +63,12 @@ else
 	private List<Product> products = new();
 	private Dictionary<string, bool> productSelections = new();
 	private Dictionary<string, int> quantities = new();
-	private string selectedCustomerId = "";
 	private Order newOrder = new();
 	private bool orderPlaced = false;
 
 	protected override async Task OnInitializedAsync()
 	{
-		customers = await CustomerService.GetCustomersAsync() ?? new();
+		customers = await CustomerService.GetCustomersAsync() ?? new List<Customer>();
 		products = await ProductService.GetproductsAsync() ?? new List<Product>();
 
 		// Ensure every product ID exists in the dictionaries
@@ -72,7 +81,9 @@ else
 
 	private async Task SubmitOrder()
 	{
-		if (string.IsNullOrEmpty(selectedCustomerId))
+		Console.WriteLine($"Selected customer Id: {newOrder.CustomerId}");
+
+		if (string.IsNullOrEmpty(newOrder.CustomerId))
 		{
 			Console.WriteLine("No customer selected.");
 			return;
@@ -82,7 +93,7 @@ else
 			.Where(p => productSelections.ContainsKey(p.Id!) && productSelections[p.Id!])
 			.Select(p => new OrderItem
 				{
-					ProductId = p.Id,
+					ProductId = p.Id!,
 					ProductName = p.Name,
 					Price = p.Price,
 					Quantity = quantities.ContainsKey(p.Id!) ? quantities[p.Id!] : 1
@@ -97,7 +108,7 @@ else
 
 		newOrder = new Order
 		{
-			CustomerId = selectedCustomerId,
+			CustomerId = newOrder.CustomerId,
 			Items = selectedProducts,
 			TotalPrice = selectedProducts.Sum(p => p.Price * p.Quantity)
 		};
