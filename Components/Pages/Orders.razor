@@ -60,7 +60,14 @@ else
 	protected override async Task OnInitializedAsync()
 	{
 		customers = await CustomerService.GetCustomersAsync() ?? new();
-		products = await ProductService.GetproductsAsync() ?? new();
+		products = await ProductService.GetproductsAsync() ?? new List<Product>();
+
+		// Ensure every product ID exists in the dictionaries
+		foreach (var product in products)
+		{
+			productSelections[product.Id!] = false; // Default unchecked
+			quantities[product.Id!] = 1; // Default quantity = 1
+		}
 	}
 
 	private async Task SubmitOrder()

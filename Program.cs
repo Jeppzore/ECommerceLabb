@@ -29,6 +29,18 @@ builder.Services.AddHttpClient<CustomerService>(client =>
     Console.WriteLine($"HttpClient CustomerService BaseAddress SET: {client.BaseAddress}");
 });
 
+builder.Services.AddHttpClient<OrderService>(client =>
+{
+    var apiBaseUrl = builder.Configuration["ApiBaseUrl"];
+    if (string.IsNullOrEmpty(apiBaseUrl))
+    {
+        throw new Exception("ApiBaseUrl is missing in configuration!");
+    }
+
+    client.BaseAddress = new Uri(apiBaseUrl);
+    Console.WriteLine($"HttpClient OrderService BaseAddress SET: {client.BaseAddress}");
+
+});
 
 
 
