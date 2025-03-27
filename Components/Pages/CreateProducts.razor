@@ -1,0 +1,78 @@
+﻿@using ECommerceLabb.Services
+@using ECommerceLabb.Models
+@using System.Text.Json
+@using Microsoft.AspNetCore.Components.Forms
+@page "/createproducts"
+@inject CustomerService CustomerService
+
+<PageTitle>Create Products</PageTitle>
+<h3>Let your imagination flow!</h3>
+
+@if (isConflict)
+{
+	<p><b>Failed to register!</b> A Customer with that email already exists, or you haven't filled in all the forms.</p>
+}
+
+@if (isSubmitted)
+{
+	<p>Registration successful!</p>
+}
+else
+{
+	<EditForm Model="customer" OnValidSubmit="HandleSubmit" FormName="SubmitForm" Enhance>
+		<DataAnnotationsValidator />
+		<ValidationSummary />
+
+		<div>
+			<label>First Name:</label>
+			<InputText @bind-Value="customer!.FirstName" />
+		</div>
+
+		<div>
+			<label>Last Name:</label>
+			<InputText @bind-Value="customer.LastName" />
+		</div>
+
+		<div>
+			<label>Email:</label>
+			<InputText @bind-Value="customer.Email" />
+		</div>
+
+		<div>
+			<label>Address:</label>
+			<InputText @bind-Value="customer.Address" />
+		</div>
+
+		<div>
+			<label>Phone Number:</label>
+			<InputText @bind-Value="customer.PhoneNumber" />
+		</div>
+
+		<button type="submit">Register</button>
+	</EditForm>
+}
+
+@code {
+	[SupplyParameterFromForm]
+	public Customer? customer { get; set; } = new();
+
+	public bool isSubmitted = false;
+	public bool isConflict = false;
+
+	public async Task HandleSubmit()
+	{
+		Console.WriteLine("Form submitted. Checking customer object...");
+		Console.WriteLine(JsonSerializer.Serialize(customer, new JsonSerializerOptions { WriteIndented = true }));
+
+		var success = await CustomerService.RegisterCustomerAsync(customer!);
+		Console.WriteLine("API call result: " + success);
+		if (success)
+		{
+			isSubmitted = true;
+		}
+		else
+		{
+			isConflict = true;
+		}
+	}
+}
