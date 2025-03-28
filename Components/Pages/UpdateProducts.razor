@@ -1,78 +1,67 @@
-﻿@using ECommerceLabb.Services
+﻿@rendermode InteractiveServer
+
+@using ECommerceLabb.Services
 @using ECommerceLabb.Models
 @using System.Text.Json
 @using Microsoft.AspNetCore.Components.Forms
+
 @page "/updateproducts"
+
 @inject CustomerService CustomerService
+@inject ProductService ProductService
+@inject ProductStateService ProductState
 
-<PageTitle>Register</PageTitle>
-<h3>Register here for special offers!</h3>
+<PageTitle>Update Product</PageTitle>
+<h3>Update your products here!</h3>
 
-@if (isConflict)
+@if (ProductState.SelectedProduct == null)
 {
-	<p><b>Failed to register!</b> A Customer with that email already exists, or you haven't filled in all the forms.</p>
-}
-
-@if (isSubmitted)
-{
-	<p>Registration successful!</p>
+	<p>No product selected!</p>
 }
 else
 {
-	<EditForm Model="customer" OnValidSubmit="HandleSubmit" FormName="SubmitForm" Enhance>
-		<DataAnnotationsValidator />
-		<ValidationSummary />
+	<p> Selected Product: @ProductState.SelectedProduct.Name</p>
 
-		<div>
-			<label>First Name:</label>
-			<InputText @bind-Value="customer!.FirstName" />
-		</div>
+	<label for="product"> Select Product: </label>
+	<select @bind="selectedProductId">
+		@foreach (var product in products!)
+		{
+			<option value="@product.Id"> @product.Name </option>
+		}
+	</select>
 
-		<div>
-			<label>Last Name:</label>
-			<InputText @bind-Value="customer.LastName" />
-		</div>
+	<br />
 
-		<div>
-			<label>Email:</label>
-			<InputText @bind-Value="customer.Email" />
-		</div>
+	<label>Name:</label>
+	<input @bind="ProductState.SelectedProduct.Name" />
 
-		<div>
-			<label>Address:</label>
-			<InputText @bind-Value="customer.Address" />
-		</div>
+	<br />
 
-		<div>
-			<label>Phone Number:</label>
-			<InputText @bind-Value="customer.PhoneNumber" />
-		</div>
+	<label>Available:</label>
+	<input type="checkbox" @bind="ProductState.SelectedProduct.Status"/>
 
-		<button type="submit">Register</button>
-	</EditForm>
+	<br />
+
+	<button @onclick="SaveChanges"> Save </button>
 }
 
 @code {
-	[SupplyParameterFromForm]
-	public Customer? customer { get; set; } = new();
+	private List<Product>? products;
+	private string? selectedProductId;
 
-	public bool isSubmitted = false;
-	public bool isConflict = false;
-
-	public async Task HandleSubmit()
+	protected override async Task OnInitializedAsync()
 	{
-		Console.WriteLine("Form submitted. Checking customer object...");
-		Console.WriteLine(JsonSerializer.Serialize(customer, new JsonSerializerOptions { WriteIndented = true }));
+		Console.WriteLine("Looking for available products..");
+		products = await ProductService.GetproductsAsync() ?? new List<Product>();
+		Console.WriteLine($"Result after looking for products: {products}");
 
-		var success = await CustomerService.RegisterCustomerAsync(customer!);
-		Console.WriteLine("API call result: " + success);
-		if (success)
+	}
+
+	private async Task SaveChanges()
+	{
+		if (ProductState.SelectedProduct != null)
 		{
-			isSubmitted = true;
-		}
-		else
-		{
-			isConflict = true;
+			await ProductService.UpdateProductAsync(ProductState.SelectedProduct.Id!, ProductState.SelectedProduct);
 		}
 	}
 }

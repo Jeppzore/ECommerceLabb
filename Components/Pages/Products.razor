@@ -1,7 +1,11 @@
-﻿@using ECommerceLabb.Services
+﻿@rendermode InteractiveServer
+@using ECommerceLabb.Services
 @using ECommerceLabb.Models;
+@using Microsoft.AspNetCore.Components.Server;
 @page "/products"
 @inject ProductService ProductService
+@inject ProductStateService ProductState
+@inject NavigationManager NavManager
 
 <PageTitle>Products</PageTitle>
 
@@ -17,12 +21,15 @@ else
 		@foreach (var product in products!)
 		{
 			<li>
-				@product.Name ($@product.Price) 
+				@product.Name ($@product.Price)
 				<br/> "@product.Description" 
 				<br>
 				<br/> Category: @product.Category 
-				<br/> Status: @product.Status
-				<br/> <button>Delete</button>
+				<br/> Status: @product.Status				
+				<p>
+					<button @onclick="() => NavigateToUpdate(product)"> Update </button>
+					<button @onclick="() => DeleteProduct(product.Id!)"> Delete </button>
+				</p>
 			</li>
 			<hr />
 		}
@@ -35,5 +42,37 @@ else
 	protected override async Task OnInitializedAsync()
 	{
 		products = await ProductService.GetproductsAsync();
+	}
+
+	private void NavigateToUpdate(Product product)
+	{
+		ProductState.SetSelectedProduct(product);
+		NavManager.NavigateTo("/updateproducts");
+	}
+
+	// private async Task UpdateProduct(Product product)
+	// {
+	// 	bool success = await ProductService.UpdateProductAsync(product.Id!, product);
+	// 	if (success)
+	// 	{
+	// 		Console.WriteLine($"Product {product.Id} updated successfully!");
+	// 	}
+	// 	else
+	// 	{
+	// 		Console.WriteLine($"Failed to update product {product.Id}.");
+	// 	}
+	// }
+
+	private async Task DeleteProduct(string productId)
+	{
+		Console.WriteLine($"DeleteProduct called with ID: {productId}"); // Debug-logg
+		bool success = await ProductService.DeleteProductAsync(productId);
+
+		if (success)
+		{
+			// Update list locally
+			products = products!.Where(p => p.Id != productId).ToList();
+		}
+		StateHasChanged();
 	}
 }

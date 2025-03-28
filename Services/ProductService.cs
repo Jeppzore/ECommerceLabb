@@ -23,5 +23,17 @@ namespace ECommerceLabb.Services
         {
             return await _httpClient.GetFromJsonAsync<List<Product>>($"{_apiBaseUrl}/products");
         }
+
+        public async Task<bool> DeleteProductAsync(string id)
+        {
+            var response = await _httpClient.DeleteAsync($"{_apiBaseUrl}/products/{id}");
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> UpdateProductAsync(string id, Product updatedProduct)
+        {
+            var response = await _httpClient.PutAsJsonAsync($"{_apiBaseUrl}/products/{id}", updatedProduct);
+            return response.IsSuccessStatusCode;
+        }
     }
 }
