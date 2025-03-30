@@ -4,6 +4,7 @@
 @using ECommerceLabb.Models
 @using System.Text.Json
 @using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Server;
 
 @page "/updateproducts"
 
@@ -14,13 +15,13 @@
 <PageTitle>Update Product</PageTitle>
 <h3>Update your products here!</h3>
 
-@if (ProductState.SelectedProduct == null)
+@if (products == null)
 {
-	<p>No product selected!</p>
+	<p>Loading products...</p>
 }
 else
 {
-	<p> Selected Product: @ProductState.SelectedProduct.Name</p>
+	@* <p> Selected Product: @ProductState.SelectedProduct!.Name</p> *@
 
 	<label for="product"> Select Product: </label>
 	<select @bind="selectedProductId">
@@ -51,10 +52,24 @@ else
 
 	protected override async Task OnInitializedAsync()
 	{
-		Console.WriteLine("Looking for available products..");
-		products = await ProductService.GetproductsAsync() ?? new List<Product>();
-		Console.WriteLine($"Result after looking for products: {products}");
-
+		Console.WriteLine($"Looking for available products.. ");
+		try
+		{
+			products = await ProductService.GetproductsAsync();
+			if (products == null)
+			{
+				Console.WriteLine("Product list is still null!");
+			}
+			else
+			{
+				Console.WriteLine($"Loaded {products.Count} products.");
+			}
+		}
+		catch (Exception ex)
+		{
+			
+			Console.WriteLine($"Error while loading products: {ex.Message}");
+		}
 	}
 
 	private async Task SaveChanges()

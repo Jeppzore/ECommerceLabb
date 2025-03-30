@@ -2,6 +2,7 @@
 @using ECommerceLabb.Services
 @using ECommerceLabb.Models;
 @using Microsoft.AspNetCore.Components.Server;
+@using System.Text.Json
 @page "/products"
 @inject ProductService ProductService
 @inject ProductStateService ProductState
@@ -41,7 +42,10 @@ else
 
 	protected override async Task OnInitializedAsync()
 	{
+		Console.WriteLine("Looking for available products..");
 		products = await ProductService.GetproductsAsync();
+		Console.WriteLine($"Result after looking for products: {products!.Count}");
+
 	}
 
 	private void NavigateToUpdate(Product product)
