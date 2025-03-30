@@ -1,4 +1,5 @@
 ﻿using System.Net.Http.Json;
+using System.Text.Json;
 using ECommerceLabb.Models;
 
 namespace ECommerceLabb.Services
@@ -34,6 +35,26 @@ namespace ECommerceLabb.Services
         {
             var response = await _httpClient.PutAsJsonAsync($"{_apiBaseUrl}/products/{id}", updatedProduct);
             return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> CreateProductAsync(Product product)
+        {
+            try
+            {
+                Console.WriteLine($"HttpClient BaseAddress: {_httpClient.BaseAddress}");
+                Console.WriteLine($"Sending request to API: {JsonSerializer.Serialize(product)}");
+
+                var response = await _httpClient.PostAsJsonAsync($"{_apiBaseUrl}/products", product);
+
+                Console.WriteLine($"Response Status Code: {response.StatusCode}");
+
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error calling API: {ex.Message}");
+                return false;
+            }
         }
     }
 }

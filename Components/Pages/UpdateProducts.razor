@@ -13,7 +13,18 @@
 @inject ProductStateService ProductState
 
 <PageTitle>Update Product</PageTitle>
-<h3>Update your products here!</h3>
+<h3>Update your product here</h3>
+<hr />
+
+@if (isConflict)
+{
+	<p><b>Failed to Create the product!</b> You haven't filled in the forms correctly.'</p>
+}
+
+@if (isSubmitted)
+{
+	<p>Registration successful!</p>
+}
 
 @if (products == null)
 {
@@ -21,34 +32,73 @@
 }
 else
 {
-	@* <p> Selected Product: @ProductState.SelectedProduct!.Name</p> *@
 
-	<label for="product"> Select Product: </label>
-	<select @bind="selectedProductId">
-		@foreach (var product in products!)
-		{
-			<option value="@product.Id"> @product.Name </option>
-		}
-	</select>
+	<label for="product"> <b> Selected Product: </b> <i> @ProductState.SelectedProduct!.Name </i> </label>
 
 	<br />
+	<br />
 
+	// Product number
+	<label>Product Number:</label>
+	<input @bind="ProductState.SelectedProduct!.ProductNumber" />
+	<br />
+	// Name
 	<label>Name:</label>
-	<input @bind="ProductState.SelectedProduct.Name" />
-
+	<input @bind="ProductState.SelectedProduct!.Name" />
 	<br />
-
+	// Price
+	<label>Price:</label>
+	<input @bind="ProductState.SelectedProduct!.Price" />
+	<br />
+	// Description
+	<label>Description:</label>
+	<input @bind="ProductState.SelectedProduct!.Description" />
+	<br />
+	// Category
+	<label>Category:</label>
+	<input @bind="ProductState.SelectedProduct!.Category" />
+	<br />
+	// Status
 	<label>Available:</label>
-	<input type="checkbox" @bind="ProductState.SelectedProduct.Status"/>
+	<input type="checkbox" checked="@isChecked" @oninput="CheckboxChanged">
 
 	<br />
-
 	<button @onclick="SaveChanges"> Save </button>
 }
 
 @code {
 	private List<Product>? products;
 	private string? selectedProductId;
+
+	public bool IsChecked { get; set; } = true;
+	private bool isChecked;
+
+	public bool isSubmitted = false;
+	public bool isConflict = false;
+
+	// updates the internal value whenver the component is updated
+	protected override void OnParametersSet()
+	{
+		isChecked = this.IsChecked;		
+	}
+	
+
+	private void CheckboxChanged(ChangeEventArgs e)
+	{
+		// get the checkbox state
+		var value = e.Value;
+		Console.WriteLine($"Checkbox changed {IsChecked}");
+
+		if (isChecked == true)
+		{
+			ProductState.SelectedProduct!.Status = ProductStatus.Unavailable;
+			isChecked = false;
+		}
+		else
+		{
+			ProductState.SelectedProduct!.Status = ProductStatus.Available;
+		}
+	}
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -76,7 +126,15 @@ else
 	{
 		if (ProductState.SelectedProduct != null)
 		{
-			await ProductService.UpdateProductAsync(ProductState.SelectedProduct.Id!, ProductState.SelectedProduct);
+			var success = await ProductService.UpdateProductAsync(ProductState.SelectedProduct.Id!, ProductState.SelectedProduct);
+			if (success)
+			{
+				isSubmitted = true;
+			}
+			else
+			{
+				isConflict = true;
+			}
 		}
 	}
 }

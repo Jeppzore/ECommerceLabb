@@ -20,13 +20,6 @@ else
 		<DataAnnotationsValidator />
 		<ValidationSummary />
 
-		<!-- Debugging: Display All Customers -->
-		<h4>Debugging Customers:</h4>
-		@foreach (var customer in customers)
-		{
-			<p>ID: @customer.Id, Name: @customer.FirstName @customer.LastName</p>
-		}
-
 		@* Customer Dropdown *@
 		<div>
 			<label>Select Customer:</label>
@@ -34,11 +27,10 @@ else
 				<option value="">-- Select --</option>
 				@foreach (var customer in customers)
 				{
-					<option value="@customer.Id">@customer.FirstName @customer.LastName @customer.Id</option>	
+					<option value="@customer.Id">@customer.FirstName @customer.LastName</option>	
 				}
 			</select>
 
-			<p>Selected Customer ID: @newOrder.CustomerId</p>
 		</div>
 
 		<div>
