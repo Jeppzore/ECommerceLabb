@@ -56,7 +56,14 @@ else
 	<br />
 	// Category
 	<label>Category:</label>
-	<input @bind="ProductState.SelectedProduct!.Category" />
+	<select @bind="ProductState.SelectedProduct.Category">
+		<option value="">-- Select --</option>
+		@foreach (var category in Enum.GetValues<ProductCategory>())
+		{
+			<option value="@category">@category</option>
+		}
+	</select>
+
 	<br />
 	// Status
 	<label>Available:</label>
