@@ -1,0 +1,65 @@
+﻿@rendermode InteractiveServer
+
+@using ECommerceLabb.Services
+@using ECommerceLabb.Models;
+@using Microsoft.AspNetCore.Components.Server;
+@using System.Text.Json
+
+@page "/searchproducts"
+
+@inject ProductService ProductService
+@inject ProductStateService ProductState
+@inject NavigationManager NavManager
+
+<h3>Search Products!</h3>
+<hr />
+
+@if (isConflict)
+{
+	<p><b>Search failed</b> A product with that name doesn't' exists.</p>
+}
+
+@if (isSubmitted)
+{
+	<p>Search successful!</p>
+}
+else
+{
+	<EditForm Model="product" OnValidSubmit="HandleSubmit" FormName="SearchForm" Enhance>
+		<DataAnnotationsValidator />
+		<ValidationSummary />
+
+		<div>
+			<label>Search by name:</label>
+			<InputText @bind-Value="product!.Name" />
+		</div>
+
+		<br />
+		<button type="submit">Search </button>
+	</EditForm>
+}
+
+@code {
+	[SupplyParameterFromForm]
+	public Product? product { get; set; } = new();
+
+	public bool isSubmitted = false;
+	public bool isConflict = false;
+
+	public async Task HandleSubmit()
+	{
+		Console.WriteLine("Form submitted. Checking product object...");
+		Console.WriteLine(JsonSerializer.Serialize(product, new JsonSerializerOptions { WriteIndented = true }));
+
+		var success = await ProductService.CreateProductAsync(product!);
+		Console.WriteLine("API call result: " + success);
+		if (success)
+		{
+			isSubmitted = true;
+		}
+		else
+		{
+			isConflict = true;
+		}
+	}
+}
