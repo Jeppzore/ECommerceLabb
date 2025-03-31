@@ -16,7 +16,7 @@
 
 @if (isConflict)
 {
-	<p><b>Search failed</b> A product with that name does not exists.</p>
+	<p><b>Search failed</b> A product with that name does not exists: <b>@product!.Name</b></p>
 }
 
 @if (isSubmitted)
@@ -39,7 +39,7 @@ else
 
 		<div>
 			<label>Search by name:</label>
-			<InputText @bind-Value="product!.Name" />
+			<InputText @bind-Value="product!.Name"/>
 		</div>
 
 		<br />
@@ -53,9 +53,11 @@ else
 
 	public bool isSubmitted = false;
 	public bool isConflict = false;
+	public string searchValue = string.Empty;
 
 	public async Task HandleSubmit()
 	{
+		searchValue = product!.Name;
 		try
 		{
 			var productResult = await ProductService.GetproductByNameAsync(product!.Name!);			
