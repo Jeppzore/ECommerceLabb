@@ -17,22 +17,22 @@
 
 @if (isConflict)
 {
-	<p><b>Failed to Create the product!</b> You haven't filled in the forms correctly.'</p>
+	<p><b>Failed to update the customer!</b> You haven't filled in the forms correctly.'</p>
 }
 
 @if (isSubmitted)
 {
-	<p>Registration successful!</p>
+	<p>Update successful!</p>
 }
 
 @if (customers == null)
 {
-	<p>Loading products...</p>
+	<p>Loading customers...</p>
 }
 else
 {
 
-	<label for="customer"> <b> Selected Customer: </b> <i> @CustomerState.SelectedCustomer!.FirstName @CustomerState.SelectedCustomer.LastName  </i> </label>
+	<label for="customer"> <b> Selected Customer: </b> <i> @CustomerState.SelectedCustomer!.FirstName @CustomerState.SelectedCustomer.LastName </i> </label>
 
 	<br />
 	<br />
@@ -49,7 +49,7 @@ else
 	<label>Email:</label>
 	<input @bind="CustomerState.SelectedCustomer!.Email" />
 	<br />
-				// Description
+	// Description
 	<label>Address:</label>
 	<input @bind="CustomerState.SelectedCustomer!.Address" />
 	<br />
@@ -95,7 +95,7 @@ else
 	{
 		if (CustomerState.SelectedCustomer != null)
 		{
-			var success = await CustomerService.UpdateCustomerAsync(CustomerState.SelectedCustomer.Id!, CustomerState.SelectedCustomer);
+			var success = await CustomerService.UpdateCustomerAsync(CustomerState.SelectedCustomer.Email!, CustomerState.SelectedCustomer);
 			if (success)
 			{
 				isSubmitted = true;
