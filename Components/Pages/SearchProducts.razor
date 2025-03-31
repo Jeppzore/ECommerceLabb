@@ -16,12 +16,20 @@
 
 @if (isConflict)
 {
-	<p><b>Search failed</b> A product with that name doesn't' exists.</p>
+	<p><b>Search failed</b> A product with that name does not exists.</p>
 }
 
 @if (isSubmitted)
 {
-	<p>Search successful!</p>
+	<p>Search successful! - <b>@product!.Name</b> </p>
+	<ul>
+		<li>Name: @product!.Name</li>
+		<li>Product Number: @product!.ProductNumber</li>
+		<li>Price: @product!.Price</li>
+		<li>Description: @product!.Description</li>
+		<li>Category: @product!.Category</li>
+		<li>Available: @product!.Status</li>
+	</ul>
 }
 else
 {
@@ -48,18 +56,25 @@ else
 
 	public async Task HandleSubmit()
 	{
-		Console.WriteLine("Form submitted. Checking product object...");
-		Console.WriteLine(JsonSerializer.Serialize(product, new JsonSerializerOptions { WriteIndented = true }));
+		try
+		{
+			var productResult = await ProductService.GetproductByNameAsync(product!.Name!);			
+			if (productResult != null)
+			{
+				product = productResult;
+				isSubmitted = true;
+			}
+			else
+			{
+				isConflict = true;
+			}
 
-		var success = await ProductService.CreateProductAsync(product!);
-		Console.WriteLine("API call result: " + success);
-		if (success)
-		{
-			isSubmitted = true;
 		}
-		else
+		catch (Exception ex)
 		{
+			Console.WriteLine($"Unexpected error: {ex.Message}");
 			isConflict = true;
+			isSubmitted = false;
 		}
 	}
 }

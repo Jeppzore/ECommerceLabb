@@ -25,7 +25,20 @@ namespace ECommerceLabb.Services
             return await _httpClient.GetFromJsonAsync<List<Product>>($"{_apiBaseUrl}/products");
         }
 
-        public async Task<bool> DeleteProductAsync(string id)
+		public async Task<Product> GetproductByNameAsync(string name)
+		{
+            try
+            {
+			    return await _httpClient.GetFromJsonAsync<Product>($"{_apiBaseUrl}/products/name/{name}");
+            }
+            catch (HttpRequestException ex)
+            {
+				Console.WriteLine($"Error fetching product: {ex.Message}");
+				return null!;
+			}
+		}
+
+		public async Task<bool> DeleteProductAsync(string id)
         {
             var response = await _httpClient.DeleteAsync($"{_apiBaseUrl}/products/{id}");
             return response.IsSuccessStatusCode;

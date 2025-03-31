@@ -50,22 +50,11 @@ else
 
 	private void NavigateToUpdate(Product product)
 	{
+		Console.WriteLine("Navigating to update..");
 		ProductState.SetSelectedProduct(product);
 		NavManager.NavigateTo("/updateproducts");
+		Console.WriteLine("NAVIGATED!");
 	}
-
-	// private async Task UpdateProduct(Product product)
-	// {
-	// 	bool success = await ProductService.UpdateProductAsync(product.Id!, product);
-	// 	if (success)
-	// 	{
-	// 		Console.WriteLine($"Product {product.Id} updated successfully!");
-	// 	}
-	// 	else
-	// 	{
-	// 		Console.WriteLine($"Failed to update product {product.Id}.");
-	// 	}
-	// }
 
 	private async Task DeleteProduct(string productId)
 	{
