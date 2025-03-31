@@ -1,7 +1,13 @@
-﻿@using ECommerceLabb.Services
+﻿@rendermode InteractiveServer
+
+@using ECommerceLabb.Services
 @using ECommerceLabb.Models;
+
 @page "/customers"
+
 @inject CustomerService CustomerService
+@inject CustomerStateService CustomerState
+@inject NavigationManager NavManager
 
 <PageTitle>Customers</PageTitle>
 
@@ -20,6 +26,9 @@ else
 			<li>Email: @customer.Email</li>
 			<li>Address: @customer.Address</li>
 			<li>Phone number: @customer.PhoneNumber</li>
+			<p>
+				<button @onclick="() => NavigateToUpdate(customer)"> Update </button>
+			</p>
 			<hr />
 		}
 	</ul>
@@ -31,5 +40,13 @@ else
 	protected override async Task OnInitializedAsync()
 	{
 		customers = await CustomerService.GetCustomersAsync();
+	}
+
+	private void NavigateToUpdate(Customer customer)
+	{
+		Console.WriteLine("Navigating to update..");
+		CustomerState.SetSelectedCustomer(customer);
+		NavManager.NavigateTo("/updatecustomers");
+		Console.WriteLine("NAVIGATED!");
 	}
 }

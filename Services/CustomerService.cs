@@ -31,8 +31,14 @@ namespace ECommerceLabb.Services
         {
             return await _httpClient.GetFromJsonAsync<List<Customer>>($"{_apiBaseUrl}/customers");
         }
-        
-        public async Task<bool> RegisterCustomerAsync(Customer customer)
+
+		public async Task<bool> UpdateCustomerAsync(string id, Customer updatedCustomer)
+		{
+			var response = await _httpClient.PutAsJsonAsync($"{_apiBaseUrl}/customers/{id}", updatedCustomer);
+			return response.IsSuccessStatusCode;
+		}
+
+		public async Task<bool> RegisterCustomerAsync(Customer customer)
         {
             try
             {

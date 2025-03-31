@@ -1,78 +1,109 @@
-﻿@using ECommerceLabb.Services
+﻿@rendermode InteractiveServer
+
+@using ECommerceLabb.Services
 @using ECommerceLabb.Models
 @using System.Text.Json
 @using Microsoft.AspNetCore.Components.Forms
-@page "/updatecustomers"
-@inject CustomerService CustomerService
+@using Microsoft.AspNetCore.Components.Server;
 
-<PageTitle>Update Customers</PageTitle>
-<h3>Update your customers here!</h3>
+@page "/updatecustomers"
+
+@inject CustomerService CustomerService
+@inject CustomerStateService CustomerState
+
+<PageTitle>Update Customer</PageTitle>
+<h3>Update your customer here</h3>
+<hr />
 
 @if (isConflict)
 {
-	<p><b>Failed to register!</b> A Customer with that email already exists, or you haven't filled in all the forms.</p>
+	<p><b>Failed to Create the product!</b> You haven't filled in the forms correctly.'</p>
 }
 
 @if (isSubmitted)
 {
 	<p>Registration successful!</p>
 }
+
+@if (customers == null)
+{
+	<p>Loading products...</p>
+}
 else
 {
-	<EditForm Model="customer" OnValidSubmit="HandleSubmit" FormName="SubmitForm" Enhance>
-		<DataAnnotationsValidator />
-		<ValidationSummary />
 
-		<div>
-			<label>First Name:</label>
-			<InputText @bind-Value="customer!.FirstName" />
-		</div>
+	<label for="customer"> <b> Selected Customer: </b> <i> @CustomerState.SelectedCustomer!.FirstName @CustomerState.SelectedCustomer.LastName  </i> </label>
 
-		<div>
-			<label>Last Name:</label>
-			<InputText @bind-Value="customer.LastName" />
-		</div>
+	<br />
+	<br />
 
-		<div>
-			<label>Email:</label>
-			<InputText @bind-Value="customer.Email" />
-		</div>
+	// Product number
+	<label>First Name:</label>
+	<input @bind="CustomerState.SelectedCustomer!.FirstName" />
+	<br />
+	// Name
+	<label>Last Name:</label>
+	<input @bind="CustomerState.SelectedCustomer!.LastName" />
+	<br />
+	// Price
+	<label>Email:</label>
+	<input @bind="CustomerState.SelectedCustomer!.Email" />
+	<br />
+				// Description
+	<label>Address:</label>
+	<input @bind="CustomerState.SelectedCustomer!.Address" />
+	<br />
+	// Category
+	<label>Phone Number:</label>
+	<input @bind="CustomerState.SelectedCustomer!.PhoneNumber" />
 
-		<div>
-			<label>Address:</label>
-			<InputText @bind-Value="customer.Address" />
-		</div>
-
-		<div>
-			<label>Phone Number:</label>
-			<InputText @bind-Value="customer.PhoneNumber" />
-		</div>
-
-		<button type="submit">Register</button>
-	</EditForm>
+	<br />
+	<button @onclick="SaveChanges"> Save </button>
 }
 
 @code {
-	[SupplyParameterFromForm]
-	public Customer? customer { get; set; } = new();
+	private List<Customer>? customers;
+	private string? selectedCustomerId;
 
 	public bool isSubmitted = false;
 	public bool isConflict = false;
 
-	public async Task HandleSubmit()
-	{
-		Console.WriteLine("Form submitted. Checking customer object...");
-		Console.WriteLine(JsonSerializer.Serialize(customer, new JsonSerializerOptions { WriteIndented = true }));
 
-		var success = await CustomerService.RegisterCustomerAsync(customer!);
-		Console.WriteLine("API call result: " + success);
-		if (success)
+	protected override async Task OnInitializedAsync()
+	{
+		Console.WriteLine($"Looking for available products.. ");
+		try
 		{
-			isSubmitted = true;
+			customers = await CustomerService.GetCustomersAsync();
+			if (customers == null)
+			{
+				Console.WriteLine("customer list is still null!");
+			}
+			else
+			{
+				Console.WriteLine($"Loaded {customers.Count} customers.");
+			}
 		}
-		else
+		catch (Exception ex)
 		{
-			isConflict = true;
+
+			Console.WriteLine($"Error while loading customers: {ex.Message}");
+		}
+	}
+
+	private async Task SaveChanges()
+	{
+		if (CustomerState.SelectedCustomer != null)
+		{
+			var success = await CustomerService.UpdateCustomerAsync(CustomerState.SelectedCustomer.Id!, CustomerState.SelectedCustomer);
+			if (success)
+			{
+				isSubmitted = true;
+			}
+			else
+			{
+				isConflict = true;
+			}
 		}
 	}
 }
