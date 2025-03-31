@@ -1,0 +1,81 @@
+﻿@rendermode InteractiveServer
+
+@using ECommerceLabb.Services
+@using ECommerceLabb.Models;
+@using Microsoft.AspNetCore.Components.Server;
+@using System.Text.Json
+
+@page "/searchcustomers"
+
+@inject CustomerService CustomerService
+@inject CustomerStateService CustomerState
+@inject NavigationManager NavManager
+
+<h3>Search for available customers!</h3>
+<hr />
+
+@if (isConflict)
+{
+	<p><b>Search failed</b> A customer with that email does not exists: <b>@customer!.Email</b></p>
+}
+
+@if (isSubmitted)
+{
+	<p>Search successful! - <b>@customer!.Email</b> </p>
+	<ul>
+		<li>First Name: @customer!.FirstName</li>
+		<li>Last Name: @customer!.LastName</li>
+		<li>Email: @customer!.Email</li>
+		<li>Address: @customer!.Address</li>
+		<li>Phone Number: @customer!.PhoneNumber</li>
+	</ul>
+}
+else
+{
+	<EditForm Model="customer" OnValidSubmit="HandleSubmit" FormName="CustomerSearchForm" Enhance>
+		<DataAnnotationsValidator />
+		<ValidationSummary />
+
+		<div>
+			<label>Search by email:</label>
+			<InputText @bind-Value="customer!.Email" />
+		</div>
+
+		<br />
+		<button type="submit">Search </button>
+	</EditForm>
+}
+
+@code {
+	[SupplyParameterFromForm]
+	public Customer? customer { get; set; } = new();
+
+	public bool isSubmitted = false;
+	public bool isConflict = false;
+	public string searchValue = string.Empty;
+
+	public async Task HandleSubmit()
+	{
+		searchValue = customer!.Email!;
+		try
+		{
+			var customerResult = await CustomerService.GetcustomerByEmailAsync(customer!.Email!);
+			if (customerResult != null)
+			{
+				customer = customerResult;
+				isSubmitted = true;
+			}
+			else
+			{
+				isConflict = true;
+			}
+
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Unexpected error: {ex.Message}");
+			isConflict = true;
+			isSubmitted = false;
+		}
+	}
+}

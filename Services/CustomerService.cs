@@ -32,7 +32,20 @@ namespace ECommerceLabb.Services
             return await _httpClient.GetFromJsonAsync<List<Customer>>($"{_apiBaseUrl}/customers");
         }
 
-		public async Task<bool> UpdateCustomerAsync(string email, Customer updatedCustomer)
+        public async Task<Customer> GetcustomerByEmailAsync(string email)
+        {
+            try
+            {
+                return await _httpClient.GetFromJsonAsync<Customer>($"{_apiBaseUrl}/customers/{email}");
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"Error fetching product: {ex.Message}");
+                return null!;
+            }
+        }
+
+        public async Task<bool> UpdateCustomerAsync(string email, Customer updatedCustomer)
 		{
 			var response = await _httpClient.PutAsJsonAsync($"{_apiBaseUrl}/customers/{email}", updatedCustomer);
 			return response.IsSuccessStatusCode;
