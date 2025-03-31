@@ -1,9 +1,15 @@
-﻿@using ECommerceLabb.Services
+﻿@rendermode InteractiveServer
+
+@using ECommerceLabb.Services
 @using ECommerceLabb.Models
 @using System.Text.Json
 @using Microsoft.AspNetCore.Components.Forms
+
 @page "/createproducts"
+
+@inject CustomerService CustomerService
 @inject ProductService ProductService
+@inject ProductStateService ProductState
 
 <PageTitle>Create Products</PageTitle>
 <h3>Let your imagination flow!</h3>
@@ -42,6 +48,15 @@ else
 			<label>Description:</label>
 			<InputText @bind-Value="product.Description" />
 		</div>
+
+		<label>Category:</label>
+	<select @bind="product.Category">
+		<option value="">-- Select --</option>
+		@foreach (var category in Enum.GetValues<ProductCategory>())
+		{
+			<option value="@category">@category</option>
+		}
+	</select>
 
 
 		<button type="submit">Create Product </button>
