@@ -17,14 +17,8 @@ namespace ECommerceLabb.Services
         {
             _httpClient = httpClient;
 
-            //_configuration = configuration;
-
             // Read API URL from appsettings.json
             _apiBaseUrl = configuration["ApiBaseUrl"] ?? throw new Exception("ApiBaseUrl is missing from configuration!");
-            Console.WriteLine($"HttpClient BaseAddress: {_httpClient.BaseAddress}");
-
-            Console.WriteLine($"CustomerService Constructor - ApiBaseUrl: {_apiBaseUrl}");
-            Console.WriteLine($"CustomerService Constructor - HttpClient BaseAddress: {_httpClient.BaseAddress}");
         }
 
         public async Task<List<Customer>?> GetCustomersAsync()
