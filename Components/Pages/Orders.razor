@@ -9,6 +9,14 @@
 <PageTitle>Place an Order</PageTitle>
 
 <h3>Place an Order</h3>
+<hr />
+
+@if (isProductSelected == false)
+{
+	<h5> No products selected. Failed to create order.</h5>
+	<br />
+}
+
 
 @if (orderPlaced)
 {
@@ -58,6 +66,7 @@ else
 	private Dictionary<string, int> quantities = new();
 	private Order newOrder = new();
 	private bool orderPlaced = false;
+	private bool isProductSelected = true;
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -92,10 +101,12 @@ else
 					Quantity = quantities.ContainsKey(p.Id!) ? quantities[p.Id!] : 1
 				})
 			.ToList();
+			Console.WriteLine($"selectedProducts = {selectedProducts.ToList()}");
 
 		if (!selectedProducts.Any())
 		{
 			Console.WriteLine("No products selected.");
+			isProductSelected = false;
 			return;
 		}
 
