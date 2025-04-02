@@ -13,17 +13,22 @@
 @inject ProductStateService ProductState
 
 <PageTitle>Update Product</PageTitle>
-<h3>Update your product here</h3>
+
+<h3 class="mb-3">Update your product here</h3>
 <hr />
 
 @if (isConflict)
 {
-	<p><b>Failed to Create the product!</b> You haven't filled in the forms correctly.'</p>
+	<div class="alert alert-danger" role="alert">
+		<b>Failed to update the product!</b> Please check that all fields are filled correctly.
+	</div>
 }
 
 @if (isSubmitted)
 {
-	<p>Registration successful!</p>
+	<div class="alert alert-success" role="alert">
+		<b>Update successful!</b> The product has been saved.
+	</div>
 }
 
 @if (products == null)
@@ -32,45 +37,53 @@
 }
 else
 {
+	<div class="card shadow-sm border-0 p-4" style="max-width: 500px;">
+		<div class="card-body">
+			<div class="mb-3">
+				<label class="form-label">Selected Product: <b>@ProductState.SelectedProduct!.Name</b></label>
+			</div>
 
-	<label for="product"> <b> Selected Product: </b> <i> @ProductState.SelectedProduct!.Name </i> </label>
+			<h5 class="card-title mb-3">Edit Product</h5>
 
-	<br />
-	<br />
+			<div class="mb-3">
+				<label class="form-label">Product Number:</label>
+				<InputText @bind-Value="ProductState.SelectedProduct!.ProductNumber" class="form-control" />
+			</div>
 
-	// Product number
-	<label>Product Number:</label>
-	<input @bind="ProductState.SelectedProduct!.ProductNumber" />
-	<br />
-	// Name
-	<label>Name:</label>
-	<input @bind="ProductState.SelectedProduct!.Name" />
-	<br />
-	// Price
-	<label>Price:</label>
-	<input @bind="ProductState.SelectedProduct!.Price" />
-	<br />
-	// Description
-	<label>Description:</label>
-	<input @bind="ProductState.SelectedProduct!.Description" />
-	<br />
-	// Category
-	<label>Category:</label>
-	<select @bind="ProductState.SelectedProduct.Category">
-		<option value="">-- Select --</option>
-		@foreach (var category in Enum.GetValues<ProductCategory>())
-		{
-			<option value="@category">@category</option>
-		}
-	</select>
+			<div class="mb-3">
+				<label class="form-label">Name:</label>
+				<InputText @bind-Value="ProductState.SelectedProduct!.Name" class="form-control" />
+			</div>
 
-	<br />
-	// Status
-	<label>Available:</label>
-	<input type="checkbox" checked="@isChecked" @oninput="CheckboxChanged">
+			<div class="mb-3">
+				<label class="form-label">Price:</label>
+				<InputNumber @bind-Value="ProductState.SelectedProduct!.Price" class="form-control" />
+			</div>
 
-	<br />
-	<button @onclick="SaveChanges"> Save </button>
+			<div class="mb-3">
+				<label class="form-label">Description:</label>
+				<InputText @bind-Value="ProductState.SelectedProduct!.Description" class="form-control" />
+			</div>
+
+			<div class="mb-3">
+				<label class="form-label">Category:</label>
+				<select @bind="ProductState.SelectedProduct!.Category" class="form-select">
+					<option value="">-- Select --</option>
+					@foreach (var category in Enum.GetValues<ProductCategory>())
+					{
+						<option value="@category">@category</option>
+					}
+				</select>
+			</div>
+
+			<div class="form-check mb-3">
+				<input type="checkbox" checked="@isChecked" @oninput="CheckboxChanged" class="form-check-input" id="availableCheckbox">
+				<label class="form-check-label" for="availableCheckbox">Available</label>
+			</div>
+
+			<button class="btn btn-primary w-100" @onclick="SaveChanges">Save Changes</button>
+		</div>
+	</div>
 }
 
 @code {

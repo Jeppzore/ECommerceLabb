@@ -11,25 +11,35 @@
 @inject ProductStateService ProductState
 @inject NavigationManager NavManager
 
-<h3>Search Products!</h3>
+<h3 class="mb-3">Search Products!</h3>
 <hr />
 
 @if (isConflict)
 {
-	<p><b>Search failed</b> A product with that name does not exists: <b>@product!.Name</b></p>
+	<div class="alert alert-danger" role="alert">
+		<b>Search failed:</b> A product with that name does not exist: <b>@product!.Name</b>
+	</div>
 }
 
 @if (isSubmitted)
 {
-	<p>Search successful! - <b>@product!.Name</b> </p>
-	<ul>
-		<li>Name: @product!.Name</li>
-		<li>Product Number: @product!.ProductNumber</li>
-		<li>Price: $@product!.Price</li>
-		<li>Description: @product!.Description</li>
-		<li>Category: @product!.Category</li>
-		<li>Available: @product!.Status</li>
-	</ul>
+	<div class="alert alert-success" role="alert">
+		Search successful! - <b>@product!.Name</b>
+	</div>
+
+	<div class="card shadow-sm border-1 mt-3" style="max-width: 400px;">
+		<div class="card-body">
+			<h5 class="card-title">@product!.Name</h5>
+			<h6 class="card-subtitle text-muted">Product Number: @product!.ProductNumber</h6>
+			<p class="card-text mt-2">@product!.Description</p>
+
+			<ul class="list-group list-group-flush">
+				<li class="list-group-item"><b>Price:</b> $@product!.Price</li>
+				<li class="list-group-item"><b>Category:</b> @product!.Category</li>
+				<li class="list-group-item"><b>Status:</b> @(product!.Status == ProductStatus.Available ? "🟢 Available" : "🔴 Unavailable")</li>
+			</ul>
+		</div>
+	</div>
 }
 else
 {
@@ -37,13 +47,12 @@ else
 		<DataAnnotationsValidator />
 		<ValidationSummary />
 
-		<div>
-			<label>Search by name:</label>
-			<InputText @bind-Value="product!.Name"/>
+		<div class="mb-3">
+			<label class="form-label">Search by name:</label>
+			<InputText @bind-Value="product!.Name" class="form-control" />
 		</div>
 
-		<br />
-		<button type="submit">Search </button>
+		<button type="submit" class="btn btn-primary">Search</button>
 	</EditForm>
 }
 

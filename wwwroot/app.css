@@ -49,3 +49,19 @@ h1:focus {
 .darker-border-checkbox.form-check-input {
     border-color: #929292;
 }
+
+.product-card {
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out;
+}
+
+    .product-card:hover {
+        transform: scale(1.05);
+    }
+
+.category-header {
+    border-radius: 6px;
+    margin-bottom: 10px;
+}

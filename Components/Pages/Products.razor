@@ -10,62 +10,92 @@
 
 <PageTitle>Products</PageTitle>
 
-<h3>Products</h3>
+<div class="container mt-4">
+    <h3 class="mb-4">Products</h3>
 
-@if (products == null)
-{
-	<p>Loading...</p>
-}
-else
-{
-	<ul>
-		@foreach (var product in products!)
-		{
-			<li>
-				<b>@product.Name</b> - ($@product.Price)
-				<br/> "@product.Description" 
-				<br>
-				<br/> Category: @product.Category 
-				<br/> Status: @product.Status				
-				<p>
-					<button @onclick="() => NavigateToUpdate(product)"> Update </button>
-					<button @onclick="() => DeleteProduct(product.Id!)"> Delete </button>
-				</p>
-			</li>
-			<hr />
-		}
-	</ul>
-}
+    @if (products == null)
+    {
+        <p>Loading...</p>
+    }
+    else
+    {
+        var groupedProducts = products.GroupBy(p => p.Category).OrderBy(g => g.Key);
+
+        @foreach (var categoryGroup in groupedProducts)
+        {
+            <div class="category-header" style="@(GetCategoryStyle(categoryGroup.Key))">
+                <h4 class="text-white p-2">@categoryGroup.Key</h4>
+            </div>
+
+            <div class="row">
+                @foreach (var product in categoryGroup)
+                {
+                    <div class="col-md-4 mb-3">
+                        <div class="card product-card">
+                            <div class="card-body">
+                                <h5 class="card-title">@product.Name</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">$@product.Price</h6>
+                                <p class="card-text">@product.Description</p>
+                                <p>
+                                    <strong>Status:</strong>
+                                    <span class="badge @(product.Status == ProductStatus.Available ? "bg-success" : "bg-secondary")">
+                                        @product.Status
+                                    </span>
+                                </p>
+                                <div class="d-flex justify-content-between">
+                                    <button class="btn btn-primary btn-sm" @onclick="() => NavigateToUpdate(product)">Update</button>
+                                    <button class="btn btn-danger btn-sm" @onclick="() => DeleteProduct(product.Id!)">Delete</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    }
+</div>
 
 @code {
-	private List<Product>? products;
+    private List<Product>? products;
 
-	protected override async Task OnInitializedAsync()
-	{
-		Console.WriteLine("Looking for available products..");
-		products = await ProductService.GetproductsAsync();
-		Console.WriteLine($"Result after looking for products: {products!.Count}");
+    protected override async Task OnInitializedAsync()
+    {
+        Console.WriteLine("Looking for available products..");
+        products = await ProductService.GetproductsAsync();
+        Console.WriteLine($"Result after looking for products: {products!.Count}");
 
-	}
+    }
 
-	private void NavigateToUpdate(Product product)
-	{
-		Console.WriteLine("Navigating to update..");
-		ProductState.SetSelectedProduct(product);
-		NavManager.NavigateTo("/updateproducts");
-		Console.WriteLine("NAVIGATED!");
-	}
+    private void NavigateToUpdate(Product product)
+    {
+        Console.WriteLine("Navigating to update..");
+        ProductState.SetSelectedProduct(product);
+        NavManager.NavigateTo("/updateproducts");
+        Console.WriteLine("NAVIGATED!");
+    }
 
-	private async Task DeleteProduct(string productId)
-	{
-		Console.WriteLine($"DeleteProduct called with ID: {productId}"); // Debug-logg
-		bool success = await ProductService.DeleteProductAsync(productId);
+    private async Task DeleteProduct(string productId)
+    {
+        Console.WriteLine($"DeleteProduct called with ID: {productId}"); // Debug-logg
+        bool success = await ProductService.DeleteProductAsync(productId);
 
-		if (success)
-		{
-			// Update list locally
-			products = products!.Where(p => p.Id != productId).ToList();
-		}
-		StateHasChanged();
-	}
+        if (success)
+        {
+            // Update list locally
+            products = products!.Where(p => p.Id != productId).ToList();
+        }
+        StateHasChanged();
+    }
+
+    private string GetCategoryStyle(ProductCategory category)
+    {
+        return category switch
+        {
+            ProductCategory.Food => "background: linear-gradient(90deg, #ff9a8b, #ff6a88);",
+            ProductCategory.Clothes => "background: linear-gradient(90deg, #6a11cb, #2575fc);",
+            ProductCategory.Electronics => "background: linear-gradient(90deg, #009688, #004d40);",
+            ProductCategory.Other => "background: linear-gradient(90deg, #ffcc00, #ff9900);",
+            _ => "background: linear-gradient(90deg, #555, #333);" // Fallback-color
+        };
+    }
 }

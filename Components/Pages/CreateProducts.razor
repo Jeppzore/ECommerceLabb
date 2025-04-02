@@ -12,55 +12,68 @@
 @inject ProductStateService ProductState
 
 <PageTitle>Create Products</PageTitle>
-<h3>Let your imagination flow!</h3>
+
+<h3 class="mb-3">Let your imagination flow!</h3>
+<hr />
 
 @if (isConflict)
 {
-	<p><b>Failed to create!</b> A product with that productnumber already exists, or you haven't filled in all the forms.</p>
+    <div class="alert alert-danger" role="alert">
+        <b>Failed to create!</b> A product with that product number already exists, or you haven't filled in all the fields.
+    </div>
 }
 
 @if (isSubmitted)
 {
-	<p>Creation successful!</p>
+    <div class="alert alert-success" role="alert">
+        <b>Creation successful!</b> Your product has been added.
+    </div>
 }
 else
 {
-	<EditForm Model="product" OnValidSubmit="HandleSubmit" FormName="SubmitForm" Enhance>
-		<DataAnnotationsValidator />
-		<ValidationSummary />
+    <div class="card shadow-sm border-0 p-4" style="max-width: 500px;">
+        <div class="card-body">
+            <h5 class="card-title mb-3">Create a new product</h5>
 
-		<div>
-			<label>Product Number:</label>
-			<InputText @bind-Value="product!.ProductNumber" />
-		</div>
+            <EditForm Model="product" OnValidSubmit="HandleSubmit" FormName="SubmitForm" Enhance>
+                <DataAnnotationsValidator />
+                <ValidationSummary />
 
-		<div>
-			<label>Name:</label>
-			<InputText @bind-Value="product.Name" />
-		</div>
+                <div class="mb-3">
+                    <label class="form-label">Product Number:</label>
+                    <InputText @bind-Value="product!.ProductNumber" class="form-control" />
+                </div>
 
-		<div>
-			<label>Price:</label>
-			<InputNumber @bind-Value="product.Price" />
-		</div>
+                <div class="mb-3">
+                    <label class="form-label">Name:</label>
+                    <InputText @bind-Value="product.Name" class="form-control" />
+                </div>
 
-		<div>
-			<label>Description:</label>
-			<InputText @bind-Value="product.Description" />
-		</div>
+                <div class="mb-3">
+                    <label class="form-label">Price:</label>
+                    <InputNumber @bind-Value="product.Price" class="form-control" />
+                </div>
 
-		<label>Category:</label>
-	<select @bind="product.Category">
-		<option value="">-- Select --</option>
-		@foreach (var category in Enum.GetValues<ProductCategory>())
-		{
-			<option value="@category">@category</option>
-		}
-	</select>
+                <div class="mb-3">
+                    <label class="form-label">Description:</label>
+                    <InputText @bind-Value="product.Description" class="form-control" />
+                </div>
 
+                <div class="mb-3">
+                    <label class="form-label">Category:</label>
+                    <select @bind="product.Category" class="form-select">
+                        <option value="">-- Select --</option>
+                        @foreach (var category in Enum.GetValues<ProductCategory>())
+                        {
+                            <option value="@category">@category</option>
+                        }
+                    </select>
+                </div>
 
-		<button type="submit">Create Product </button>
-	</EditForm>
+                <button type="submit" class="btn btn-primary w-100">Create Product</button>
+            </EditForm>
+        </div>
+    </div>
 }
 
 @code {
