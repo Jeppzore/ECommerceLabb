@@ -61,6 +61,10 @@ h1:focus {
         transform: scale(1.05);
     }
 
+    .customer-card:hover {
+        transform: scale(1.04);
+    }
+
 .category-header {
     border-radius: 6px;
     margin-bottom: 10px;

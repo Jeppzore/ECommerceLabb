@@ -12,54 +12,68 @@
 @inject CustomerStateService CustomerState
 
 <PageTitle>Update Customer</PageTitle>
-<h3>Update your customer here</h3>
+
+<h3 class="mb-3">Update your customer here</h3>
 <hr />
 
 @if (isConflict)
 {
-	<p><b>Failed to update the customer!</b> You haven't filled in the forms correctly.'</p>
+	<div class="alert alert-danger" role="alert">
+		<b>Failed to update the customer!</b> Please check that all fields are correct.
+	</div>
 }
 
 @if (isSubmitted)
 {
-	<p>Update successful!</p>
+	<div class="alert alert-success" role="alert">
+		<b>Update successful!</b> The customer has been saved.
+	</div>
 }
 
 @if (customers == null)
 {
-	<p>Loading customers...</p>
+	<p>Loading products...</p>
 }
 else
 {
+	<div class="card shadow-sm border-0 p-4" style="max-width: 500px;">
+		<div class="card-body">
+			<div class="mb-3">
+				<label class="form-label">Selected Customer: <b>@CustomerState.SelectedCustomer!.FirstName @CustomerState.SelectedCustomer.LastName</b></label>
+			</div>
 
-	<label for="customer"> <b> Selected Customer: </b> <i> @CustomerState.SelectedCustomer!.FirstName @CustomerState.SelectedCustomer.LastName </i> </label>
+			<h5 class="card-title mb-3">Edit Customer</h5>
 
-	<br />
-	<br />
+			<div class="mb-3">
+				<label class="form-label">First Name:</label>
+				<InputText @bind-Value="CustomerState.SelectedCustomer!.FirstName" class="form-control" />
+			</div>
 
-	// Product number
-	<label>First Name:</label>
-	<input @bind="CustomerState.SelectedCustomer!.FirstName" />
-	<br />
-	// Name
-	<label>Last Name:</label>
-	<input @bind="CustomerState.SelectedCustomer!.LastName" />
-	<br />
-	// Price
-	<label>Email:</label>
-	<input @bind="CustomerState.SelectedCustomer!.Email" />
-	<br />
-	// Description
-	<label>Address:</label>
-	<input @bind="CustomerState.SelectedCustomer!.Address" />
-	<br />
-	// Category
-	<label>Phone Number:</label>
-	<input @bind="CustomerState.SelectedCustomer!.PhoneNumber" />
+			<div class="mb-3">
+				<label class="form-label">Last Name:</label>
+				<InputText @bind-Value="CustomerState.SelectedCustomer!.LastName" class="form-control" />
+			</div>
 
-	<br />
-	<button @onclick="SaveChanges"> Save </button>
+			<div class="mb-3">
+				<label class="form-label">Email:</label>
+				<InputText @bind-Value="CustomerState.SelectedCustomer!.Email" class="form-control" disabled />
+			</div>
+
+			<div class="mb-3">
+				<label class="form-label">Address:</label>
+				<InputText @bind-Value="CustomerState.SelectedCustomer!.Address" class="form-control" />
+			</div>
+
+			<div class="mb-3">
+				<label class="form-label">Phone Number:</label>
+				<InputText @bind-Value="CustomerState.SelectedCustomer!.PhoneNumber" class="form-control" />
+			</div>
+
+			<button class="btn btn-primary w-100" @onclick="SaveChanges">Save Changes</button>
+		</div>
+	</div>
 }
+
 
 @code {
 	private List<Customer>? customers;
@@ -93,6 +107,19 @@ else
 
 	private async Task SaveChanges()
 	{
+		isConflict = string.IsNullOrWhiteSpace(CustomerState.SelectedCustomer!.FirstName) ||
+					 string.IsNullOrWhiteSpace(CustomerState.SelectedCustomer!.LastName) ||
+					 string.IsNullOrWhiteSpace(CustomerState.SelectedCustomer!.Address) ||
+					 string.IsNullOrWhiteSpace(CustomerState.SelectedCustomer!.PhoneNumber);
+
+		// Return if any or all inputfields are empty.
+		if (isConflict)
+		{
+			isSubmitted = false;
+			return;
+		}
+
+
 		if (CustomerState.SelectedCustomer != null)
 		{
 			var success = await CustomerService.UpdateCustomerAsync(CustomerState.SelectedCustomer.Email!, CustomerState.SelectedCustomer);

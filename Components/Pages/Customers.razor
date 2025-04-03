@@ -1,19 +1,50 @@
 ﻿@rendermode InteractiveServer
-
 @using ECommerceLabb.Services
 @using ECommerceLabb.Models;
-
 @page "/customers"
-
 @inject CustomerService CustomerService
 @inject CustomerStateService CustomerState
 @inject NavigationManager NavManager
 
 <PageTitle>Customers</PageTitle>
 
-<h3>Customers</h3>
+<div class="container mt-4">
+    <h3 class="mb-4">Customers</h3>
 
-@if (customers == null)
+    @if (customers == null)
+    {
+        <p>Loading...</p>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var customer in customers!)
+            {
+                <div class="col-md-4 mb-3">
+                    <div class="card customer-card shadow-sm border-2">
+                        <div class="card-body">
+                            <h5 class="card-title">@customer.FirstName @customer.LastName</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">@customer.Email</h6>
+
+                            <p class="card-text">
+                                <i class="fas fa-home me-2"></i>@customer.Address <br />
+                                <i class="fas fa-phone-alt me-2"></i>@customer.PhoneNumber
+                            </p>
+
+                            <div class="d-flex justify-content-between">
+                                <button class="btn btn-primary btn-sm" @onclick="() => NavigateToUpdate(customer)">
+                                    Update
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@* @if (customers == null)
 {
 	<p>Loading...</p>
 }
@@ -32,7 +63,7 @@ else
 			<hr />
 		}
 	</ul>
-}
+} *@
 
 @code {
 	private List<Customer>? customers;

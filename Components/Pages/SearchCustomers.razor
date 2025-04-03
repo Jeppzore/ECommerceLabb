@@ -11,24 +11,34 @@
 @inject CustomerStateService CustomerState
 @inject NavigationManager NavManager
 
-<h3>Search for available customers!</h3>
+<h3 class="mb-3">Search for available customers!</h3>
 <hr />
 
 @if (isConflict)
 {
-	<p><b>Search failed</b> A customer with that email does not exists: <b>@customer!.Email</b></p>
+	<div class="alert alert-danger" role="alert">
+		<b>Search failed:</b> A customer with that email does not exist: <b>@customer!.Email</b>
+	</div>
 }
 
 @if (isSubmitted)
 {
-	<p>Search successful! - <b>@customer!.Email</b> </p>
-	<ul>
-		<li>First Name: @customer!.FirstName</li>
-		<li>Last Name: @customer!.LastName</li>
-		<li>Email: @customer!.Email</li>
-		<li>Address: @customer!.Address</li>
-		<li>Phone Number: @customer!.PhoneNumber</li>
-	</ul>
+	<div class="alert alert-success" role="alert">
+		Search successful! - <b>@customer!.Email</b>
+	</div>
+
+	<div class="card shadow-sm border-1 mt-3" style="max-width: 400px;">
+		<div class="card-body">
+			<h5 class="card-title">@customer!.FirstName @customer!.LastName</h5>
+			<h6 class="card-subtitle text-muted">@customer!.Email</h6>
+			<br />
+
+			<p class="card-text">
+				<i class="fas fa-home me-2"></i>@customer.Address <br />
+				<i class="fas fa-phone-alt me-2"></i>@customer.PhoneNumber
+			</p>
+		</div>
+	</div>
 }
 else
 {
