@@ -8,56 +8,64 @@
 
 <PageTitle>Place an Order</PageTitle>
 
-<h3>Place an Order</h3>
-<hr />
+	<h3 class="mb-3">Place an Order</h3>
 
-@if (isProductSelected == false)
-{
-	<h5> No products selected. Failed to create order.</h5>
-	<br />
-}
-
-
-@if (orderPlaced)
-{
-	<p>Thank you! Your order has been placed.</p>
-}
-else
-{
-	<EditForm Model="@newOrder" OnValidSubmit="SubmitOrder" FormName="SubmitOrderForm" Enhance>
-		<DataAnnotationsValidator />
-		<ValidationSummary />
-
-		@* Customer Dropdown *@
-		<div>
-			<label>Select Customer:</label>
-			<select @bind="newOrder.CustomerId">
-				<option value="">-- Select --</option>
-				@foreach (var customer in customers)
-				{
-					<option value="@customer.Id">@customer.FirstName @customer.LastName</option>	
-				}
-			</select>
-
+	@if (!isProductSelected)
+	{
+		<div class="alert alert-danger" role="alert">
+			<b>No products selected.</b> Failed to create order.
 		</div>
+	}
 
-		<div>
-			<label>Select Products:</label>
-			<div>
-				@foreach (var product in products)
-				{
-					<div>
-						<input type="checkbox" @bind="@productSelections[product.Id!]" />
-						<span>@product.Name - $@product.Price</span>
-						<input type="number" min=" =1" @bind="quantities[product.Id!]" placeholder="Qty" style="width: 50px;" />
+	@if (orderPlaced)
+	{
+		<div class="alert alert-success" role="alert">
+			<b>Thank you!</b> Your order has been placed successfully.
+		</div>
+	}
+	else
+	{
+		<div class="card shadow-sm border-0 p-4" style="max-width: 600px;">
+			<div class="card-body">
+
+				<EditForm Model="@newOrder" OnValidSubmit="SubmitOrder" FormName="SubmitOrderForm" Enhance>
+					<DataAnnotationsValidator />
+					<ValidationSummary />
+
+					@* Customer Selection *@
+					<div class="mb-3">
+						<label class="form-label"><b>Select Customer:</b></label>
+						<select class="form-select" @bind="newOrder.CustomerId">
+							<option value="">-- Select --</option>
+							@foreach (var customer in customers)
+							{
+								<option value="@customer.Id">@customer.FirstName @customer.LastName</option>
+							}
+						</select>
 					</div>
-				}
+
+					@* Product Selection *@
+					<div class="mb-3">
+						<label class="form-label"><b>Select Products:</b></label>
+						<div class="list-group">
+							@foreach (var product in products)
+							{
+								<div class="list-group-item d-flex justify-content-between align-items-center">
+									<div>
+										<input type="checkbox" class="form-check-input me-2" @bind="@productSelections[product.Id!]" />
+										<span>@product.Name - $@product.Price</span>
+									</div>
+									<input type="number" min="1" @bind="quantities[product.Id!]" class="form-control" placeholder="Qty" style="width: 70px;" />
+								</div>
+							}
+						</div>
+					</div>
+
+					<button type="submit" class="btn btn-primary w-100">Place Order</button>
+				</EditForm>
 			</div>
 		</div>
-
-		<button type="submit">Place Order</button>
-	</EditForm>
-}
+	}
 
 @code {
 	private List<Customer> customers = new();

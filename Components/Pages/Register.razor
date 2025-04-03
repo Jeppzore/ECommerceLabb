@@ -7,9 +7,71 @@
 @inject CustomerService CustomerService
 
 <PageTitle>Register</PageTitle>
-<h3>Register here for special offers!</h3>
 
-@if (isConflict)
+    <h3 class="mb-3">Register here for special offers!</h3>
+
+    @if (isConflict)
+    {
+        <div class="alert alert-danger" role="alert">
+            <b>Failed to register!</b> A customer with that email already exists, or you haven't filled in all the forms.
+        </div>
+    }
+
+    @if (isSubmitted)
+    {
+        <div class="alert alert-success" role="alert">
+            <b>Registration successful!</b> You are now subscribed to special offers.
+        </div>
+    }
+    else
+    {
+        <div class="card shadow-sm border-0 p-4" style="max-width: 500px;">
+            <div class="card-body">
+                <h5 class="card-title mb-3">Fill in your details</h5>
+
+                <EditForm Model="customer" OnValidSubmit="HandleSubmit" FormName="SubmitForm" Enhance>
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+
+                    <div class="mb-3">
+                        <label class="form-label">First Name:</label>
+                        <InputText @bind-Value="customer!.FirstName" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Last Name:</label>
+                        <InputText @bind-Value="customer.LastName" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Email:</label> <label class="card-subtitle mb-2 text-muted">Example@example.com</label>
+                        <InputText @bind-Value="customer.Email" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                    <label class="form-label">Address:</label> <label class="card-subtitle mb-2 text-muted">Example street 01, 51192 New York</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-home"></i></span>
+                            <InputText @bind-Value="customer.Address" class="form-control" />
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                    <label class="form-label">Phone Number:</label> <label class="card-subtitle mb-2 text-muted">+46012345678</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                            <InputText @bind-Value="customer.PhoneNumber" class="form-control" />
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">Register</button>
+                </EditForm>
+            </div>
+        </div>
+    }
+
+
+@* @if (isConflict)
 {
 	<p><b>Failed to register!</b> A Customer with that email already exists, or you haven't filled in all the forms.</p>
 }
@@ -51,7 +113,7 @@ else
 
 		<button type="submit">Register</button>
 	</EditForm>
-}
+} *@
 
 @code {
 	[SupplyParameterFromForm]
